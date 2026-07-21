@@ -14,6 +14,7 @@ ou usar as versões já empacotadas na pasta bin/)
 """
 
 import sys
+import os
 from PyQt5.QtWidgets import (
     QApplication,
     QWidget,
@@ -26,7 +27,13 @@ from PyQt5.QtWidgets import (
     QFrame,
 )
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QIcon
+
+
+def _caminho_recurso(relativo: str) -> str:
+    """Resolve caminho tanto rodando com python quanto como .exe (PyInstaller)."""
+    base = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base, relativo)
 
 from core.extractor import processar_arquivo, EXTENSOES_IMAGEM
 
@@ -246,6 +253,9 @@ class JanelaPrincipal(QWidget):
 def main():
     app = QApplication(sys.argv)
     app.setFont(QFont("Segoe UI", 12))
+    icone_path = _caminho_recurso(os.path.join("assets", "icon.ico"))
+    if os.path.exists(icone_path):
+        app.setWindowIcon(QIcon(icone_path))
     janela = JanelaPrincipal()
     janela.show()
     sys.exit(app.exec_())
